@@ -1,7 +1,8 @@
 import express from "express";
 import catRouter from "./routes/catRoutes.js";
 import dotenv from "dotenv"
-dotenv.config
+import cors from "cors"
+dotenv.config()
 const app = express();
 const port = process.env.PORT || 3000
 
