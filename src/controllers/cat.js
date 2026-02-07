@@ -4,45 +4,38 @@ import getGeminiApiData from "../services/geminiApi.js";
 const catController = {
   catData: async (req, res) => {
     try {
-      const { name, breed, image } = req.body;
+      const { name, breed } = req.body;
 
-      // Check if input is missing
-      if (!name && !breed && !image) {
-        return res.status(400).json({ message: "Please enter the data to get the desired result" });
+      // Validate input
+      if (!name && !breed) {
+        return res.status(400).json({ message: "Please enter cat name and breed" });
       }
 
-      let catData;
-      if (breed) {
-        catData = await getCatFromApi(breed);
-      } else if (image) {
-        catData = await getCatFromApi(image);
-      } else {
-        catData = await getCatFromApi(name);
-      }
+      // Fetch basic cat info from your API
+      const catData = breed ? await getCatFromApi(breed) : await getCatFromApi(name);
+      if (!catData) return res.status(404).json({ message: "Cat data not found" });
 
-      if (!catData) {
-        return res.status(404).json({ message: "Cat Data not found" });
-      }
-
-      // Prepare Gemini Input
+      // Prepare Gemini input
       const geminiInput = {
         ...catData,
         name: name || "Little Friend"
       };
 
-      // Get AI response (Now returns a JSON object thanks to our new prompt)
+      // Get AI response (food_name + visual_prompt)
       const geminiResult = await getGeminiApiData(geminiInput);
 
-      // Return clean, structured data for Frontend
+      // Generate Anime Image using Pollinations API
+      const animePrompt = encodeURIComponent(geminiResult.visual_prompt);
+      const generatedImageURL = `https://image.pollinations.ai/prompt/${animePrompt}?width=512&height=512&nologo=true&model=flux&seed=${Math.floor(Math.random() * 10000)}`;
+
+      // Return structured data for frontend
       res.status(200).json({
         cat: {
           name: name || "Unknown",
           breed: catData.breed || breed,
-          // Agar aap real photo dikhana chahti hain toh catData.image use karein, 
-          // varna niche wala anime food GIF link use karein
-          image: "https://i.pinimg.com/originals/82/30/11/823011a0f83691375d3368222955f756.gif", 
           food: geminiResult.food_name || "Special Magic Meal",
-          health_tip: geminiResult.health_tip || "Stay hydrated!"
+          image: generatedImageURL,  // AI-generated anime food image
+          health_tip: geminiResult.health_tip || "Keep your kitty hydrated!"
         }
       });
 
