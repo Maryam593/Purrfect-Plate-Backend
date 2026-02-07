@@ -11,22 +11,22 @@ const getGeminiApiData = async (cat) => {
     generationConfig: { responseMimeType: "application/json" } // Force JSON response
   });
 
-  const prompt = `
-    You are a whimsical Anime-style Cat Chef and Vet. 
-    User has a cat named "${cat.name}" which is a "${cat.breed}".
+ const prompt = `
+  You are an Anime Food Artist. The user has a ${cat.breed} named ${cat.name}.
+  
+  Task:
+  1. Create a creative anime-style food dish name.
+  2. Write a detailed visual prompt for an image generator.
+  
+  Format the visual prompt exactly like this: 
+  "Studio Ghibli style, high-quality anime art, a cute bowl of [DISH NAME] for a ${cat.breed} cat, sparkling details, aesthetic lighting, vibrant colors, 4k"
 
-    Task:
-    1. Recommend ONE creative, delicious, anime-style meal for this specific cat (e.g., "Sparkling Tuna Sashimi with Silvervine Garnish").
-    2. Give a very short 1-line health tip related to this breed and weather.
-    3. Keep the tone cute, like a Ghibli movie character.
-
-    Return ONLY a JSON object with this exact structure:
-    {
-      "food_name": "Name of the anime dish",
-      "health_tip": "Short 1-line advice",
-      "anime_visual_description": "A prompt to describe this food in anime style"
-    }
-  `;
+  Return ONLY JSON:
+  {
+    "food_name": "...",
+    "visual_prompt": "..."
+  }
+`;
 
   try {
     const result = await model.generateContent(prompt);
