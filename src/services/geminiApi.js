@@ -7,7 +7,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const getGeminiApiData = async (cat) => {
   // Model 1.5-flash fast aur JSON ke liye best hai
   const model = genAI.getGenerativeModel({ 
-    model: "gemini-1.5-flash",
+    model: "gemini-2.5-flash",
     generationConfig: { responseMimeType: "application/json" } // Force JSON response
   });
 
